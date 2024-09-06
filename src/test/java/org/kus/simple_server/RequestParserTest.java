@@ -27,15 +27,16 @@ public class RequestParserTest {
 
 	@Test
 	public void shouldParseRequest() throws IOException {
-		String input = 
-				"GET / HTTP/1.1\r\n"
-				+ "Content-Type: application/json\r\n"
-				+ "Content-Length: 69\r\n"
-				+ "\r\n"
-				+ "TESTBODYTESTBODYTESTBODY\n"
+		String body = "TESTBODYTESTBODYTESTBODY\n"
 				+ "TESTBODYTESTBODYTESTBODY"
 				+ "TESTBODYTESTBODY"
 				+ "TESTBODY\r\n";
+		String input = 
+				"GET / HTTP/1.1\r\n"
+				+ "Content-Type: application/json\r\n"
+				+ "Content-Length: " + body.length() + "\r\n"
+				+ "\r\n"
+				+ body;
 
 		InputStream testInput = new ByteArrayInputStream(input.getBytes(StandardCharsets.UTF_8));
 
@@ -46,7 +47,7 @@ public class RequestParserTest {
 		assertEquals(request.getVersion(), "1.1");
 		Assertions.assertThat(request.getHeaders())
 				.containsAllEntriesOf(Map.of(
-						CONTENT_LENGTH, "69", 
+						CONTENT_LENGTH, Integer.toString(body.length()), 
 						CONTENT_TYPE, "application/json"));
 		assertEquals(request.getBody(), 
 				"TESTBODYTESTBODYTESTBODY\n"

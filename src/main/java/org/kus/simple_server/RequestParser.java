@@ -9,6 +9,8 @@ import java.util.TreeMap;
 import org.kus.simple_server.http.HttpRequest;
 import org.kus.simple_server.http.HttpHeader;
 
+import static org.kus.simple_server.http.HttpHeader.CONTENT_LENGTH;
+
 public class RequestParser {
 	public static final String CRLF = "\n\r";
 	private static final byte SP = 0x20;
@@ -86,13 +88,18 @@ public class RequestParser {
 				}
 			}
 		}
+		
+		if (request.getHeaders().get(CONTENT_LENGTH) == null) {
+			request.getHeaders().put(CONTENT_LENGTH, "0");
+		}
 	}
 
 	private void parseBody(InputStreamReader reader, HttpRequest request) throws IOException {
 		int requestByte;
 		StringBuilder buffer = new StringBuilder();
 		
-		while ((requestByte = reader.read()) >= 0) {
+		for (int i = 0; i < Integer.parseInt(request.getHeaders().get(CONTENT_LENGTH)); i++) {
+			requestByte = reader.read();
 			buffer.append((char) requestByte);
 		}
 		

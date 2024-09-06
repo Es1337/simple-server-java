@@ -138,4 +138,8 @@ public enum HttpHeader {
 	public String toString() {
 		return this.key;
 	}
+	
+	public String getKey() {
+		return this.key;
+	}
 }
