@@ -1,12 +1,13 @@
 package org.kus.simple_server.http;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class HttpRequest {
 	private String method;
 	private String path;
 	private String version;
-	private Map<String, String> headers;
+	private Map<HttpHeader, String> headers;
 	private String body;
 	
 	public String getMethod() {
@@ -33,12 +34,12 @@ public class HttpRequest {
 		this.version = version;
 	}
 	
-	public Map<String, String> getHeaders() {
+	public Map<HttpHeader, String> getHeaders() {
 		return headers;
 	}
 	
-	public void setHeaders(Map<String, String> headers) {
-		this.headers = headers;
+	public void setHeaders(TreeMap<HttpHeader, String> treeMap) {
+		this.headers = treeMap;
 	}
 	
 	public String getBody() {

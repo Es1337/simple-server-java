@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.kus.simple_server.http.HttpRequest;
+import org.kus.simple_server.http.HttpHeader;
 
 public class RequestParser {
 	public static final String CRLF = "\n\r";
@@ -17,7 +18,7 @@ public class RequestParser {
 	public HttpRequest parse(InputStream input) throws IOException {
 		InputStreamReader reader = new InputStreamReader(input);
 		HttpRequest request = new HttpRequest();
-		request.setHeaders(new TreeMap<String, String>());
+		request.setHeaders(new TreeMap<HttpHeader, String>());
 		
 		parseRequestLine(reader, request);
 		parseHeaders(reader, request);
@@ -71,38 +72,23 @@ public class RequestParser {
 			if (requestByte == CR) {
 				requestByte = reader.read();
 				if (requestByte == LF) {
-					Map<String, String> headers = request.getHeaders();
-					String key = buffer.substring(0, buffer.lastIndexOf(":")).trim();
+					if (buffer.toString().equals("" + (char)CR)) {
+						break;
+					}
+					
+					Map<HttpHeader, String> headers = request.getHeaders();
+					HttpHeader key = HttpHeader.fromString(
+							buffer.substring(0, buffer.lastIndexOf(":")).trim());
 					String value = buffer.substring(buffer.lastIndexOf(":") + 1).trim();
 					headers.put(key, value);
-					buffer.delete(0, buffer.length());
 					
-					reader.mark(2);
-					requestByte = reader.read();
-					if (requestByte == CR) {
-						requestByte = reader.read();
-						if (requestByte == LF) {
-							break;
-						} else {
-							reader.reset();
-						}
-					}
+					buffer.delete(0, buffer.length());
 				}
 			}
 		}
 	}
 
 	private void parseBody(InputStreamReader reader, HttpRequest request) throws IOException {
-//		HttpContentType contentType = APPLICATION_JSON;
-//		if (request.getHeaders().containsKey("Content-Type")) {
-//			contentType = HttpContentType.fromString(request.getHeaders().get("Content-Type"));
-//		}
-//		
-//		if (contentType.equals(APPLICATION_JSON)) {
-//			// PARSE JSON ?
-//		} else if (contentType.equals(UNKNOWN)) {
-//			// DO SOMETHING
-//		}
 		int requestByte;
 		StringBuilder buffer = new StringBuilder();
 		
